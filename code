@@ -1,0 +1,81 @@
+import pygame
+import random
+
+# Initialize Pygame
+pygame.init()
+
+# Set up the game window
+window_width = 500
+window_height = 500
+window = pygame.display.set_mode((window_width, window_height))
+pygame.display.set_caption("Click the Circle")
+
+# Set up the circle
+circle_radius = 50
+circle_x = random.randint(circle_radius, window_width - circle_radius)
+circle_y = random.randint(circle_radius, window_height - circle_radius)
+circle_color = (255, 0, 0)
+
+# Set up the game clock
+clock = pygame.time.Clock()
+
+# Set up the game variables
+score = 0
+time_remaining = 30  # seconds
+
+# Set up the font
+font = pygame.font.SysFont(None, 36)
+
+# Main game loop
+game_running = True
+while game_running:
+    # Handle events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            game_running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # Check if the mouse click is inside the circle
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            if (mouse_x - circle_x) ** 2 + (mouse_y - circle_y) ** 2 <= circle_radius ** 2:
+                # If the mouse click is inside the circle, update the score
+                score += 1
+                # Move the circle to a new random location
+                circle_x = random.randint(circle_radius, window_width - circle_radius)
+                circle_y = random.randint(circle_radius, window_height - circle_radius)
+
+    # Clear the window
+    window.fill((255, 255, 255))
+
+    # Draw the circle
+    pygame.draw.circle(window, circle_color, (circle_x, circle_y), circle_radius)
+
+    # Draw the score and time remaining
+    score_text = font.render(f"Score: {score}", True, (0, 0, 0))
+    time_text = font.render(f"Time: {time_remaining}", True, (0, 0, 0))
+    window.blit(score_text, (10, 10))
+    window.blit(time_text, (window_width - time_text.get_width() - 10, 10))
+
+    # Update the display
+    pygame.display.flip()
+
+    # Update the game clock
+    clock.tick(60)
+
+    # Update the time remaining
+    time_remaining -= 1 / 60
+    if time_remaining <= 0:
+        # If time runs out, end the game
+        game_running = False
+
+# Game over
+game_over_text = font.render("Game over!", True, (0, 0, 0))
+score_text = font.render(f"Final score: {score}", True, (0, 0, 0))
+window.blit(game_over_text, ((window_width - game_over_text.get_width()) / 2, 200))
+window.blit(score_text, ((window_width - score_text.get_width()) / 2, 250))
+pygame.display.flip()
+
+# Wait for a few seconds before quitting
+pygame.time.wait(3000)
+
+# Quit Pygame
+pygame.quit()
